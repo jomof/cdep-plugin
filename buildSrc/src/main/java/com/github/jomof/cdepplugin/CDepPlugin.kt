@@ -48,8 +48,7 @@ class CDepPlugin : Plugin<Project> {
     }
     */
     override fun apply(project: Project) {
-        val extension = project.extensions.create(
-                "cdep", CDepDsl::class.java)
+        val extension = project.extensions.create("cdep", CDepDsl::class.java)
         val provisionSdk =
                 project.tasks.create("provision-android-sdk", ProvisionAndroidSdkTask::class.java) {
                     val sdk = project.files()
@@ -79,5 +78,12 @@ class CDepPlugin : Plugin<Project> {
                     it.ndk = provisionNdk.ndk
                     it.group = "cdep"
                 }
+        val cmakeifyAndroidTask =
+                project.tasks.create("cmakeify-android", ProvisionEverythingTask::class.java) {
+                    it.cmake = provisionCMake.binary
+                    it.ndk = provisionNdk.ndk
+                    it.group = "cdep"
+                }
+
     }
 }

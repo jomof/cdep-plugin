@@ -40,7 +40,12 @@ compileTestKotlin {
 cdep {
     provisioning {
         cmake {
-            version = "3.2"
+            executable = "3.2"
         }
     }
+//    cmakeify {
+//        android {
+//            version = "3.3"
+//        }
+//    }
 }
