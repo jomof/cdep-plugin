@@ -21,10 +21,11 @@ open class ProvisionAndroidNdkTask : DefaultTask() {
     @InputFiles
     fun getSdk(): ConfigurableFileCollection = sdk!!
 
+
     @TaskAction
     fun provision() {
         if (!sdk!!.isEmpty) {
-            val sdkNdk = File(sdk!!.singleFile, "Android/Sdk/ndk-bundle")
+            val sdkNdk = File(sdk!!.singleFile, "ndk-bundle")
             ndk!!.setFrom(sdkNdk)
             println("Found Android NDK at $sdkNdk")
         }

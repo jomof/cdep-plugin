@@ -1,10 +1,7 @@
 package com.github.jomof.cdepplugin
 
 import com.github.jomof.cdepplugin.dsl.CDepDsl
-import com.github.jomof.cdepplugin.tasks.ProvisionAndroidNdkTask
-import com.github.jomof.cdepplugin.tasks.ProvisionAndroidSdkTask
-import com.github.jomof.cdepplugin.tasks.ProvisionCMakeTask
-import com.github.jomof.cdepplugin.tasks.ProvisionEverythingTask
+import com.github.jomof.cdepplugin.tasks.*
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -47,6 +44,8 @@ class CDepPlugin : Plugin<Project> {
         }
     }
     */
+    var androidAbis = listOf("x86", "x86_64", "armeabi-v7a", "arm64-v8a")
+
     override fun apply(project: Project) {
         val extension = project.extensions.create("cdep", CDepDsl::class.java)
         val provisionSdk =
@@ -78,12 +77,20 @@ class CDepPlugin : Plugin<Project> {
                     it.ndk = provisionNdk.ndk
                     it.group = "cdep"
                 }
-        val cmakeifyAndroidTask =
-                project.tasks.create("cmakeify-android", ProvisionEverythingTask::class.java) {
-                    it.cmake = provisionCMake.binary
-                    it.ndk = provisionNdk.ndk
-                    it.group = "cdep"
-                }
+
+        var cmakeifyAndroid = project.task("cmakeify-android")
+        cmakeifyAndroid.group = "cdep"
+
+        for (abi in androidAbis) {
+            var task =
+                    project.tasks.create("cmakeify-android-$abi", CMakeifyAndroidTask::class.java) {
+                        it.cmake = provisionCMake.binary
+                        it.ndk = provisionNdk.ndk
+                        it.abi = abi
+                        it.group = "cdep"
+                    }
+            cmakeifyAndroid.dependsOn(task)
+        }
 
     }
 }
