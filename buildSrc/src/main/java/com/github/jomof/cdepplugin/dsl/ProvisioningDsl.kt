@@ -1,4 +1,4 @@
-package dsl
+package com.github.jomof.cdepplugin.dsl
 
 import org.gradle.api.Action
 
