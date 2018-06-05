@@ -4,6 +4,7 @@ import com.github.jomof.cdepplugin.dsl.CDepDsl
 import com.github.jomof.cdepplugin.tasks.*
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import java.io.File
 
 class CDepPlugin : Plugin<Project> {
     /*
@@ -48,6 +49,13 @@ class CDepPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         val extension = project.extensions.create("cdep", CDepDsl::class.java)
+        val provisionCMakeLists =
+                project.tasks.create("provision-cmakelists", ProvisionCMakeListsTxtTask::class.java) {
+                    val cmakelists = project.files()
+                    it.cmakelists = cmakelists
+                    cmakelists.setBuiltBy(listOf(it))
+                    it.group = "cdep"
+                }
         val provisionSdk =
                 project.tasks.create("provision-android-sdk", ProvisionAndroidSdkTask::class.java) {
                     val sdk = project.files()
@@ -87,6 +95,8 @@ class CDepPlugin : Plugin<Project> {
                         it.cmake = provisionCMake.binary
                         it.ndk = provisionNdk.ndk
                         it.abi = abi
+                        it.cmakelists = provisionCMakeLists.cmakelists
+                        it.buildOutputFolder = File(project.buildDir, "android/$abi")
                         it.group = "cdep"
                     }
             cmakeifyAndroid.dependsOn(task)

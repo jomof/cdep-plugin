@@ -8,6 +8,9 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/cdep-plugin.iml" filepath="$PROJECT_DIR$/.idea/modules/cdep-plugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/cdep-plugin_main.iml" filepath="$PROJECT_DIR$/.idea/modules/cdep-plugin_main.iml" group="cdep-plugin" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/cdep-plugin_test.iml" filepath="$PROJECT_DIR$/.idea/modules/cdep-plugin_test.iml" group="cdep-plugin" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cmakeifier.iml" filepath="$PROJECT_DIR$/.idea/modules/cmakeifier.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cmakeifier_main.iml" filepath="$PROJECT_DIR$/.idea/modules/cmakeifier_main.iml" group="cmakeifier" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cmakeifier_test.iml" filepath="$PROJECT_DIR$/.idea/modules/cmakeifier_test.iml" group="cmakeifier" />
     </modules>
   </component>
 </project>

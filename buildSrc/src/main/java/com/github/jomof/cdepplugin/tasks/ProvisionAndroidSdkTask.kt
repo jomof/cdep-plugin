@@ -1,5 +1,6 @@
 package com.github.jomof.cdepplugin.tasks
 
+import com.github.jomof.cdepplugin.provision.isWindows
 import com.github.jomof.cdepplugin.provision.userFolder
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
@@ -16,11 +17,20 @@ open class ProvisionAndroidSdkTask : DefaultTask() {
 
     @TaskAction
     fun provision() {
-        val userFolderSdk = File(userFolder(), "Android/Sdk")
-        if (userFolderSdk.isDirectory) {
-            sdk!!.setFrom(userFolderSdk)
-            println("Found Android SDK at $userFolderSdk")
-            return
+        if (!isWindows()) {
+            val userFolderSdk = File(userFolder(), "Android/Sdk")
+            if (userFolderSdk.isDirectory) {
+                sdk!!.setFrom(userFolderSdk)
+                println("Found Android SDK at $userFolderSdk")
+                return
+            }
+        } else {
+            val userFolderSdk = File(userFolder(), "AppData/Local/Android/Sdk")
+            if (userFolderSdk.isDirectory) {
+                sdk!!.setFrom(userFolderSdk)
+                println("Found Android SDK at $userFolderSdk")
+                return
+            }
         }
     }
 }
