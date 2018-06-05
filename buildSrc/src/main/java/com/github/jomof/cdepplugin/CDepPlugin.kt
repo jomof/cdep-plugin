@@ -71,6 +71,14 @@ class CDepPlugin : Plugin<Project> {
                     binary.setBuiltBy(listOf(it))
                     it.group = "cdep"
                 }
+        val provisionNinja =
+                project.tasks.create("provision-ninja", ProvisionNinjaTask::class.java) {
+                    val binary = project.files()
+                    it.binary = binary
+                    it.sdk = provisionSdk.sdk
+                    binary.setBuiltBy(listOf(it))
+                    it.group = "cdep"
+                }
         val provisionNdk =
                 project.tasks.create("provision-android-ndk", ProvisionAndroidNdkTask::class.java) {
                     val ndk = project.files()
@@ -79,27 +87,34 @@ class CDepPlugin : Plugin<Project> {
                     ndk.setBuiltBy(listOf(it))
                     it.group = "cdep"
                 }
-        val consumeEverythingTask =
-                project.tasks.create("provision-everything", ProvisionEverythingTask::class.java) {
-                    it.cmake = provisionCMake.binary
-                    it.ndk = provisionNdk.ndk
-                    it.group = "cdep"
-                }
-
-        var cmakeifyAndroid = project.task("cmakeify-android")
+        val cmakeifyAndroid = project.task("cmakeify-android")
         cmakeifyAndroid.group = "cdep"
 
         for (abi in androidAbis) {
-            var task =
-                    project.tasks.create("cmakeify-android-$abi", CMakeifyAndroidTask::class.java) {
+
+            var startTask =
+                    project.tasks.create("start-cmakeify-android-$abi", StartCMakeifyAndroidTask::class.java) {
                         it.cmake = provisionCMake.binary
+                        it.ninja = provisionNinja.binary
                         it.ndk = provisionNdk.ndk
                         it.abi = abi
                         it.cmakelists = provisionCMakeLists.cmakelists
-                        it.buildOutputFolder = File(project.buildDir, "android/$abi")
+                        it.buildOutputFolder = File(project.buildDir, "cdep/cmakeify/android/$abi")
+                        val stdout = project.files()
+                        stdout.setFrom(File(it.buildOutputFolder, "stdout.txt"))
+                        val stderr = project.files()
+                        stderr.setFrom(File(it.buildOutputFolder, "stderr.txt"))
+                        it.stdout = stdout
+                        it.stderr = stderr
                         it.group = "cdep"
                     }
-            cmakeifyAndroid.dependsOn(task)
+            val completeTask =
+                    project.tasks.create("complete-cmakeify-android-$abi", CompleteCMakeifyTask::class.java) {
+                        it.process = startTask.process
+                        it.dependsOn(startTask)
+                        it.group = "cdep"
+                    }
+            cmakeifyAndroid.dependsOn(completeTask)
         }
 
     }
